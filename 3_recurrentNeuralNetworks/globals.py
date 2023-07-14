@@ -142,13 +142,13 @@ class ML_utils:
         )
 
         # save training history
-        with open(os.path.join(MODEL_SINK, 'history'), 'wb') as history_file:
+        with open(os.path.join(MODEL_SINK, 'history_{}'.format(N_EPOCHS)), 'wb') as history_file:
             pickle.dump(self.history, history_file)
 
         # save model weights and model architecture
         self.regressor.save(
-            os.path.join(MODEL_SINK, 'modelRNN.h5')
+            os.path.join(MODEL_SINK, 'modelRNN_{}.h5'.format(N_EPOCHS))
         )
         self.regressor.save_weights(
-            os.path.join(MODEL_SINK, 'modelRNN_weights')
+            os.path.join(MODEL_SINK, 'modelRNN_weights_{}'.format(N_EPOCHS))
         )

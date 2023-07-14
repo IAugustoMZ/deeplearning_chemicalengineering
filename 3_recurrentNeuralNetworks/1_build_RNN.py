@@ -15,7 +15,7 @@ for data in ['train', 'test', 'validation']:
     ).values
 
 # create a data structure with 90 past values and 1 outputs
-MEMORY_STEPS = 90           # behavior of last 3 months
+MEMORY_STEPS = 30           # behavior of last 3 months
 PREDICTION_WINDOW = 7       # predict next week
 mlu = ML_utils()
 
@@ -35,8 +35,9 @@ for data in ['train', 'test', 'validation']:
 
 # build and compile the RNN
 mlu.build_RNN(
-    architecture=(100, 75, 50, 25),
-    input_shape=x_y_datasets['x_train'].shape
+    architecture=(100, 100, 50, 25),
+    input_shape=x_y_datasets['x_train'].shape,
+    regularization_level=0.1
 )
 
 mlu.fit_model(
@@ -44,7 +45,8 @@ mlu.fit_model(
     y_train=x_y_datasets['y_train'],
     x_val=x_y_datasets['x_validation'],
     y_val=x_y_datasets['y_validation'],
-    N_EPOCHS=250
+    N_EPOCHS=300,
+    BATCH_SIZE=64
 )
 
 print('OK')
