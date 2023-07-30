@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import pandas as pd
 from globals import *
+from  mlutils import ML_utils
 
 # load the datasets
 datasets = dict()
@@ -16,7 +17,7 @@ for data in ['train', 'test', 'validation']:
 
 # create a data structure with 90 past values and 1 outputs
 MEMORY_STEPS = 30           # behavior of last 3 months
-PREDICTION_WINDOW = 7       # predict next week
+PREDICTION_WINDOW = 1       # predict next day
 mlu = ML_utils()
 
 x_y_datasets = dict()
@@ -45,8 +46,8 @@ mlu.fit_model(
     y_train=x_y_datasets['y_train'],
     x_val=x_y_datasets['x_validation'],
     y_val=x_y_datasets['y_validation'],
-    N_EPOCHS=300,
-    BATCH_SIZE=64
+    N_EPOCHS=75,
+    BATCH_SIZE=8
 )
 
 print('OK')
