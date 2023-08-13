@@ -19,4 +19,4 @@ In this use case, we explore the application of Recurrent Neural Networks (RNN) 
 
 The main purpose is to check whether a RNN - a LSTM (Long Short-Term Memory Network, more specifically) - is capable of using data of on crisis period (the Oil Shock of 2007-2008) to predict the intense variations in the prices during th COVID-19 global pandemic.
 
-<img src="./4_imgs/rnn_studies/prediction_rnn.png">
+<img src="./4_imgs/rnn_studies/eda_evolution2.png">
