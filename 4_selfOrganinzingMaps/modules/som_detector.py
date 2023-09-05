@@ -80,4 +80,34 @@ class SOM_outlier_detector:
 
         # map each data point to its node
         mappings = self.som.win_map(x_scaled)
+
+        # get the list of potential anomalies
+        anom_list = []
+        for i, j in zip(outliers_nodes[0], outliers_nodes[1]):
+
+            # get the list of points mapped to the selected nodes
+            anom_list.append(mappings[(i, j)])
+
+        # clean empty values from the list
+        anom_list = [x for x in anom_list if x != []]
+
+        # concatenate all arrays in a single
+        outliers = np.concatenate(anom_list, axis=0)
+
+        # create a dataframe with a key to identify
+        outliers = pd.DataFrame(outliers, columns=x.columns)
+        outliers = outliers.round(6)
+        outliers['key'] = outliers.apply(lambda row: ''.join(map(str, row)), axis=1)
+
+        # get the scaled data as dataframe and create the keys
+        x_scaled = pd.DataFrame(x_scaled, columns=x.columns)
+        x_scaled = x_scaled.round(6)
+        x_scaled['key'] = x_scaled.apply(lambda row: ''.join(map(str, row)), axis=1)
+
+        # find the data which corresponds to outliers
+        outliers_idx = []
+        for key in outliers['key'].values:
+            outliers_idx.append(np.where(x_scaled['key'].values == key)[0][0])
+
+        return outliers_idx
         
