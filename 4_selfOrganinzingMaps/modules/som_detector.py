@@ -52,62 +52,34 @@ class SOM_outlier_detector:
             num_iteration=1000
         )
 
-    def identify_anomalies(self,
-                           x: pd.DataFrame,
-                           min_d: float=0.5) -> np.array:
+    def average_distances(self,
+                          x: pd.DataFrame) -> pd.DataFrame:
         """
-        identify outliers based on the average internode
-        distance of the trained SOM        
+        map the average distance from neighbor neurons
+        for all rows        
 
         Parameters
         ----------
         x : pd.DataFrame
             data to be analyzed
-        min_d : float, optional
-            minimum distance to consider for potential
-            outliers, by default 0.5
 
         Returns
         -------
-        np.array
-            indexes of potential outliers
+        pd.DataFrame
+            dataframe with the average distance
         """
         # get normalized values
-        x_scaled = self.scaler.transform(x)
+        x_scaled = pd.DataFrame(
+            self.scaler.transform(x),
+            columns=x.columns
+        )
 
-        # find potential outliers nodes
-        outliers_nodes = np.where(self.som.distance_map() > min_d)
+        # get all nodes list
+        nodes = self.som.distance_map()
 
         # map each data point to its node
-        mappings = self.som.win_map(x_scaled)
+        x_scaled['dist'] = x_scaled.apply(
+            lambda row: nodes[self.som.winner(row.values)], axis=1)
 
-        # get the list of potential anomalies
-        anom_list = []
-        for i, j in zip(outliers_nodes[0], outliers_nodes[1]):
-
-            # get the list of points mapped to the selected nodes
-            anom_list.append(mappings[(i, j)])
-
-        # clean empty values from the list
-        anom_list = [x for x in anom_list if x != []]
-
-        # concatenate all arrays in a single
-        outliers = np.concatenate(anom_list, axis=0)
-
-        # create a dataframe with a key to identify
-        outliers = pd.DataFrame(outliers, columns=x.columns)
-        outliers = outliers.round(6)
-        outliers['key'] = outliers.apply(lambda row: ''.join(map(str, row)), axis=1)
-
-        # get the scaled data as dataframe and create the keys
-        x_scaled = pd.DataFrame(x_scaled, columns=x.columns)
-        x_scaled = x_scaled.round(6)
-        x_scaled['key'] = x_scaled.apply(lambda row: ''.join(map(str, row)), axis=1)
-
-        # find the data which corresponds to outliers
-        outliers_idx = []
-        for key in outliers['key'].values:
-            outliers_idx.append(np.where(x_scaled['key'].values == key)[0][0])
-
-        return outliers_idx
+        return x_scaled[['dist']]
         
