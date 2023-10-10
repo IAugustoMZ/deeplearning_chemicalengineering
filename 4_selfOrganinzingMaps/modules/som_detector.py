@@ -82,4 +82,91 @@ class SOM_outlier_detector:
             lambda row: nodes[self.som.winner(row.values)], axis=1)
 
         return x_scaled[['dist']]
+    
+    def convergence_analysis(self, 
+                             x: pd.DataFrame,
+                             n:int,
+                             n_soms: int,
+                             eps:float=0.001) -> float:
+        """
+        performs a stabilization analysis to check if
+        the majority of the readings achieved convergence
+        in AID
+
+        Parameters
+        ----------
+        x : pd.DataFrame
+            dataframe to fit soms
+        n : int
+            number of iterations to perform
+        n_soms : int
+            square root of the number of neurons
+        eps : float, optional
+            tolerance limit for convergence
+            qualification, by default 0.01
+
+        Returns
+        -------
+        float
+            percentage of converged readings
+        """
+        dists = []
+
+        # make N fits and calculate AID for all samples
+        for _ in range(n):
+
+            # fit SOM
+            self.fit_som(x=x, n=n_soms)
+
+            # calculate AID
+            dists.append(self.average_distances(x=x).values)
+
+        # concatenate AIDs
+        all_dists = np.concatenate(dists, axis=1)
+
+        # create columns
+        df_cols = [f'Run{r+1}' for r in range(all_dists.shape[1])]
+
+        # create dataframe
+        df_runs = pd.DataFrame(all_dists, columns=df_cols)
+
+        # check convergence
+        df_runs['convergence'] = df_runs.apply(self.check_convergence, eps=eps, axis=1)
+
+        return df_runs['convergence'].mean()
+    
+    def check_convergence(self, row: pd.DataFrame, eps: float) -> int:
+        """
+        checks if the convergence occurred for a particular
+        set of SOMs runs for a specific reading
+
+        Parameters
+        ----------
+        row : pd.DataFrame
+            row with readings
+        eps : float
+            tolerance for convergence
+
+        Returns
+        -------
+        int
+            1 - convergence / 0 - otherwise
+        """
+
+        # iterate through all readings to check convergence
+        sample = pd.DataFrame(row.values, columns=['aid'])
+
+        # calculate cumulated mean
+        sample['cum_avg'] = sample['aid'].expanding().mean()
+
+        # calculate rolling statistics of last 10 % period
+        sample['rolling_std'] = sample['cum_avg'].rolling(5).std()
+        sample['rolling_mean'] = sample['cum_avg'].rolling(5).mean()
+        sample['rolling_cv'] = abs(sample['rolling_std'] / sample['rolling_mean'])
+
+        # check last cv for convergence
+        if (sample['rolling_cv'] < eps).values[-1]:
+            return 1
+        
+        return 0
         
