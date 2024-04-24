@@ -1,4 +1,5 @@
 # %%
+import json
 import warnings
 import numpy as np
 import pandas as pd
@@ -16,7 +17,7 @@ warnings.filterwarnings('ignore')
 data = pd.read_csv('../0_data/som_studies/data_rotaA.csv', index_col=[0])
 
 # %%
-# define the columns that will be used in the PCA
+# define the columns that will be used in the SOM
 x_cols = ['x_glic_et', 'x_cell_glic', 'eta_cell_orgsolv', 'capex_f1_A',
           'raw_mat_price', 'enzyme_load', 'lign_price', 'et_price']
 
@@ -77,7 +78,7 @@ x_data['winning'].value_counts()
 
 # %%
 # extract TOP N winning neurons
-top_n = 3
+top_n = 1
 top_n_neurons = x_data['winning'].value_counts().index[:top_n]
 # %%
 # sample data for top winning neurons
@@ -218,3 +219,63 @@ plot_bootstrap_samples({'msp': {1: min_msp_list}}, 'msp')
 # %%
 for col in x_cols:
     plot_bootstrap_samples({col: {1: x_list[col]}}, col)
+
+# %%
+# load pca data
+with open('../0_data/som_studies/pca_bootstrap.json', 'r') as f:
+    pca_data = json.load(f)
+# %%
+
+# plot the distribution of MSP for SOM and for PCA
+plt.figure(figsize=(10, 5))
+
+# plot the histograms
+plt.hist(min_msp_list, alpha=0.5, label='SOM', density=False)
+plt.hist(pca_data['msp_pca'], alpha=0.5, label='PCA', density=False)
+plt.legend()
+plt.title('Histograms', size=16)
+plt.show()
+ 
+# %%
+# define function to test the difference between the distributions
+# using bootstrap sampling
+def test_distributions(data1, data2, n_bootstraps=1000):
+    """
+    tests the difference between two distributions using bootstrap sampling
+
+    :param data1: first distribution
+    :type data1: np.array
+    :param data2: second distribution
+    :type data2: np.array
+    :param n_bootstraps: number of bootstraps
+    :type n_bootstraps: int
+    """
+    # calculate the bootstrapped means
+    bootstrapped_means1 = np.array([
+        np.mean(np.random.choice(data1, size=len(data1), replace=True))
+        for _ in range(n_bootstraps)
+    ])
+
+    bootstrapped_means2 = np.array([
+        np.mean(np.random.choice(data2, size=len(data2), replace=True))
+        for _ in range(n_bootstraps)
+    ])
+
+    # calculate the difference
+    diff = abs(bootstrapped_means1 - bootstrapped_means2)
+
+    # calculate the p-value
+    p_value = np.sum(diff > 0) / len(diff)
+
+    return p_value
+
+# calculate the p-value of the difference
+p_value = test_distributions(min_msp_list.reshape(-1,), pca_data['msp_pca'], n_bootstraps=10000)
+print(f'P-value: {p_value}')
+
+# %%
+# analyze and compare the average msp for both models
+print(f'PCA Mean: {np.mean(pca_data["msp_pca"])}')
+print(f'SOM Mean: {np.mean(min_msp_list)}')
+# %%
+# sample data 

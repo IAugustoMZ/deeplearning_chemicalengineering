@@ -1,4 +1,5 @@
 import numpy as np
+from typing import List
 import matplotlib.pyplot as plt
 
 def bootstrap(data, n_bootstraps=1000):
@@ -53,6 +54,30 @@ def plot_bootstrap_samples(boot_dict, col):
 
     # add the title
     plt.title(f'Bootstrapped Samples - {col}', size=16)
+
+    # show the plot
+    plt.show()
+
+# create a function to plot multiple histograms
+def plot_histograms(list_data: List[dict]):
+    """
+    plots multiple histograms in a single plot
+
+    :param list_data: list of dictionaries with the data
+    :type list_data: List[dict]
+    """
+    # create the figure
+    plt.figure(figsize=(10, 5))
+
+    # plot the histograms
+    for data in list_data:
+        plt.hist(data['data'], bins=30, alpha=0.5, label=data['label'])
+
+    # add the legend
+    plt.legend()
+
+    # add the title
+    plt.title('Histograms', size=16)
 
     # show the plot
     plt.show()
