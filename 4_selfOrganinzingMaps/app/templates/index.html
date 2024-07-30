@@ -1,0 +1,147 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biorefinery Risk Assessment with Deep Learning</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/style.css"></link>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2 class="text-center text-light">Biorefinery Design Inputs</h2>
+        <hr>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.glucoseToEthanol.label }}
+                <br>
+                <span class="subtitle">(Range: 0 - 100 %)</span>
+                {{ form.glucoseToEthanol(id='glucoseToEthanol', class='form-control') }}
+            </div>
+            <div class="form-group">
+                {{ form.celluloseToGlucose.label }}
+                <br>
+                <span class="subtitle">(Range: 0 - 100 %)</span>
+                {{ form.celluloseToGlucose(id='celluloseToGlucose', class='form-control') }}
+            </div>
+            <div class="form-group">
+                {{ form.organosolvToCellulose.label }}
+                <br>
+                <span class="subtitle">(Range: 0 - 100 %)</span>
+                {{ form.organosolvToCellulose(id='organosolvToCellulose', class='form-control') }}
+            </div>
+            <div class="form-group">
+                {{ form.capexPhase1.label }}
+                <br>
+                <span class="subtitle">(Range: 100 - 500 MM USD)</span>
+                {{ form.capexPhase1(id='capexPhase1', class='form-control') }}
+            </div>
+            <div class="form-group">
+                {{ form.rawMaterialCost.label }}
+                <br>
+                <span class="subtitle">(Range: 0 - 1000 USD / kg)</span>
+                {{ form.rawMaterialCost(id='rawMaterialCost', class='form-control') }}
+            </div>
+            <div class="form-group">
+                {{ form.enzymeLoading.label }}
+                <br>
+                <span class="subtitle">(Range: 0 - 1000 g / g cellulose)</span>
+                {{ form.enzymeLoading(id='enzymeLoading', class='form-control') }}
+            </div>
+            <div class="form-group">
+                {{ form.ligninSellingPrice.label }}
+                <br>
+                <span class="subtitle">(Range: 0 - 1000 USD / kg)</span>
+                {{ form.ligninSellingPrice(id='ligninSellingPrice', class='form-control') }}
+            </div>
+            <div class="form-group">
+                {{ form.ethanolSellingPrice.label }}
+                <br>
+                <span class="subtitle">(Range: 0 - 1000 USD / L)</span>
+                {{ form.ethanolSellingPrice(id='ethanolSellingPrice', class='form-control') }}
+            </div>
+            {{ form.submit(class='btn btn-primary') }}
+        </form>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Net Present Value</h5>
+                            { % if npv % }
+                                <p class="card-text">{{ npv }} MM USD</p>
+                            { % else % }
+                                <p class="card-text">- MM USD</p>
+                            { % endif % }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Minimum Selling Price</h5>
+                            <p class="card-text">Preço mínimo de venda: $XX.XX</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Risco de Atingimento das Metas 1</h5>
+                            <p class="card-text">Descrição do risco: XXX</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Risco de Atingimento das Metas 2</h5>
+                            <p class="card-text">Descrição do risco: XXX</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Distribuição de Probabilidade 1</h5>
+                            <div id="histogram1"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Distribuição de Probabilidade 2</h5>
+                            <div id="histogram2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Example scripts for histogram generation (use appropriate chart library) -->
+    <script>
+        // Example code to generate histograms using a chart library
+        // Implement histogram generation logic using your preferred charting library
+        document.getElementById('histogram1').innerText = 'Histogram 1 goes here';
+        document.getElementById('histogram2').innerText = 'Histogram 2 goes here';
+    </script>
+</body>
+</html>

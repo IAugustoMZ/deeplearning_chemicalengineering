@@ -1,0 +1,12 @@
+{
+    "columns_mapping":{
+        "glucoseToEthanol": "x_glic_et",
+        "celluloseToGlucose": "x_cell_glic",
+        "organosolvToCellulose": "eta_cell_orgsolv",
+        "capexPhase1": "capex_f1_A",
+        "rawMaterialCost": "raw_mat_price",
+        "enzymeLoading": "enzyme_load",
+        "ligninSellingPrice": "lign_price",
+        "ethanolSellingPrice": "et_price"
+    }
+}
