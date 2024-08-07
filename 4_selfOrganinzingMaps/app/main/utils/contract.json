@@ -8,5 +8,7 @@
         "enzymeLoading": "enzyme_load",
         "ligninSellingPrice": "lign_price",
         "ethanolSellingPrice": "et_price"
-    }
+    },
+    "goalMSP": 1.96,
+    "goalNPV": 700
 }
