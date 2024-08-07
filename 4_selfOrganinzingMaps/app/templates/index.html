@@ -1,3 +1,4 @@
+
 {% import "bootstrap/wtf.html" as wtf %}
 
 <!DOCTYPE html>
@@ -19,49 +20,49 @@
             <div class="form-group">
                 {{ form.glucoseToEthanol.label }}
                 <br>
-                <span class="subtitle">(Range: 0 - 100 %)</span>
+                <span class="subtitle">(Range: 90 - 100 %)</span>
                 {{ form.glucoseToEthanol(id='glucoseToEthanol', class='form-control') }}
             </div>
             <div class="form-group">
                 {{ form.celluloseToGlucose.label }}
                 <br>
-                <span class="subtitle">(Range: 0 - 100 %)</span>
+                <span class="subtitle">(Range: 65 - 90 %)</span>
                 {{ form.celluloseToGlucose(id='celluloseToGlucose', class='form-control') }}
             </div>
             <div class="form-group">
                 {{ form.organosolvToCellulose.label }}
                 <br>
-                <span class="subtitle">(Range: 0 - 100 %)</span>
+                <span class="subtitle">(Range: 80 - 100 %)</span>
                 {{ form.organosolvToCellulose(id='organosolvToCellulose', class='form-control') }}
             </div>
             <div class="form-group">
                 {{ form.capexPhase1.label }}
                 <br>
-                <span class="subtitle">(Range: 100 - 500 MM USD)</span>
+                <span class="subtitle">(Range: 160 - 319 MM USD)</span>
                 {{ form.capexPhase1(id='capexPhase1', class='form-control') }}
             </div>
             <div class="form-group">
                 {{ form.rawMaterialCost.label }}
                 <br>
-                <span class="subtitle">(Range: 0 - 1000 USD / kg)</span>
+                <span class="subtitle">(Range: 55 - 83 USD / kg)</span>
                 {{ form.rawMaterialCost(id='rawMaterialCost', class='form-control') }}
             </div>
             <div class="form-group">
                 {{ form.enzymeLoading.label }}
                 <br>
-                <span class="subtitle">(Range: 0 - 1000 g / g cellulose)</span>
+                <span class="subtitle">(Range: 0.006 - 0.020 g / g cellulose)</span>
                 {{ form.enzymeLoading(id='enzymeLoading', class='form-control') }}
             </div>
             <div class="form-group">
                 {{ form.ligninSellingPrice.label }}
                 <br>
-                <span class="subtitle">(Range: 0 - 1000 USD / kg)</span>
+                <span class="subtitle">(Range: 526 - 1096 USD / kg)</span>
                 {{ form.ligninSellingPrice(id='ligninSellingPrice', class='form-control') }}
             </div>
             <div class="form-group">
                 {{ form.ethanolSellingPrice.label }}
                 <br>
-                <span class="subtitle">(Range: 0 - 1000 USD / L)</span>
+                <span class="subtitle">(Range: 0.22 - 0.77 USD / L)</span>
                 {{ form.ethanolSellingPrice(id='ethanolSellingPrice', class='form-control') }}
             </div>
             {{ form.submit(class='btn btn-primary') }}
@@ -75,11 +76,11 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Net Present Value</h5>
-                            { % if npv % }
+                            {% if npv %}
                                 <p class="card-text">{{ npv }} MM USD</p>
-                            { % else % }
+                            {% else %}
                                 <p class="card-text">- MM USD</p>
-                            { % endif % }
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -87,7 +88,11 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Minimum Selling Price</h5>
-                            <p class="card-text">Preço mínimo de venda: $XX.XX</p>
+                            {% if msp %}
+                                <p class="card-text">{{ msp }} USD / L</p>
+                            {% else %}
+                                <p class="card-text">- USD / L</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -96,16 +101,24 @@
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Risco de Atingimento das Metas 1</h5>
-                            <p class="card-text">Descrição do risco: XXX</p>
+                            <h5 class="card-title">Risk of not Achieving NPV Goal</h5>
+                            {% if riskNPV %}
+                                <p class="card-text">{{ riskNPV }} %</p>
+                            {% else %}
+                                <p class="card-text">- %</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Risco de Atingimento das Metas 2</h5>
-                            <p class="card-text">Descrição do risco: XXX</p>
+                            <h5 class="card-title">Risk of not Achieving MSP Goal</h5>
+                            {% if riskMSP %}
+                                <p class="card-text">{{ riskMSP }} %</p>
+                            {% else %}
+                                <p class="card-text">- %</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
