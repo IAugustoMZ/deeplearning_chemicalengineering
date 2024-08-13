@@ -38,13 +38,13 @@
             <div class="form-group">
                 {{ form.capexPhase1.label }}
                 <br>
-                <span class="subtitle">(Range: 160 - 319 MM USD)</span>
+                <span class="subtitle">(Range: 168 - 312 MM USD)</span>
                 {{ form.capexPhase1(id='capexPhase1', class='form-control') }}
             </div>
             <div class="form-group">
                 {{ form.rawMaterialCost.label }}
                 <br>
-                <span class="subtitle">(Range: 55 - 83 USD / kg)</span>
+                <span class="subtitle">(Range: 56 - 83 USD / kg)</span>
                 {{ form.rawMaterialCost(id='rawMaterialCost', class='form-control') }}
             </div>
             <div class="form-group">
@@ -56,13 +56,13 @@
             <div class="form-group">
                 {{ form.ligninSellingPrice.label }}
                 <br>
-                <span class="subtitle">(Range: 526 - 1096 USD / kg)</span>
+                <span class="subtitle">(Range: 529 - 1096 USD / kg)</span>
                 {{ form.ligninSellingPrice(id='ligninSellingPrice', class='form-control') }}
             </div>
             <div class="form-group">
                 {{ form.ethanolSellingPrice.label }}
                 <br>
-                <span class="subtitle">(Range: 0.22 - 0.77 USD / L)</span>
+                <span class="subtitle">(Range: 0.27 - 0.71 USD / L)</span>
                 {{ form.ethanolSellingPrice(id='ethanolSellingPrice', class='form-control') }}
             </div>
             {{ form.submit(class='btn btn-primary') }}
@@ -72,50 +72,48 @@
     <div class="main-content">
         <div class="container">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Net Present Value</h5>
-                            {% if npv %}
-                                <p class="card-text">{{ npv }} MM USD</p>
+                            {% if payload %}
+                                <p class="card-text">{{ payload.npv }} MM USD</p>
                             {% else %}
                                 <p class="card-text">- MM USD</p>
                             {% endif %}
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Minimum Selling Price</h5>
-                            {% if msp %}
-                                <p class="card-text">{{ msp }} USD / L</p>
+                            {% if payload %}
+                                <p class="card-text">{{ payload.msp }} USD / L</p>
                             {% else %}
                                 <p class="card-text">- USD / L</p>
                             {% endif %}
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Risk of not Achieving NPV Goal</h5>
-                            {% if riskNPV %}
-                                <p class="card-text">{{ riskNPV }} %</p>
+                            <h5 class="card-title">Risk of Missing NPV</h5>
+                            {% if payload %}
+                                <p class="card-text">{{ payload.riskNPV }} %</p>
                             {% else %}
                                 <p class="card-text">- %</p>
                             {% endif %}
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Risk of not Achieving MSP Goal</h5>
-                            {% if riskMSP %}
-                                <p class="card-text">{{ riskMSP }} %</p>
+                            <h5 class="card-title">Risk of Missing MSP</h5>
+                            {% if payload %}
+                                <p class="card-text">{{ payload.riskMSP }} %</p>
                             {% else %}
                                 <p class="card-text">- %</p>
                             {% endif %}
@@ -127,16 +125,24 @@
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Distribuição de Probabilidade 1</h5>
-                            <div id="histogram1"></div>
+                            <h5 class="card-title">NPV Distribution</h5>
+                            <div id="histogram1">
+                                {% if payload %}
+                                    {{ payload.npv_dist | safe }}
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Distribuição de Probabilidade 2</h5>
-                            <div id="histogram2"></div>
+                            <h5 class="card-title">MSP Distribution</h5>
+                            <div id="histogram1">
+                                {% if payload %}
+                                    {{ payload.msp_dist | safe }}
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -148,13 +154,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-    <!-- Example scripts for histogram generation (use appropriate chart library) -->
-    <script>
-        // Example code to generate histograms using a chart library
-        // Implement histogram generation logic using your preferred charting library
-        document.getElementById('histogram1').innerText = 'Histogram 1 goes here';
-        document.getElementById('histogram2').innerText = 'Histogram 2 goes here';
-    </script>
 </body>
 </html>

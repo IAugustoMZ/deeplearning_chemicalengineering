@@ -3,8 +3,10 @@ import json
 import joblib
 import numpy as np
 import pandas as pd
+import plotly.io as pio
 from .bootstrap import *
 from .minisom import MiniSom
+import plotly.graph_objects as go
 from .forms import PlantDesignForm
 
 
@@ -145,15 +147,24 @@ class RiskAssessmentSOM:
         float
             the risk of not achieving the goals
         """
-        # get the winning node
-        winning_node = self.get_winning_node_for_input()
+        all_samples = pd.DataFrame()
+        for _ in range(100):
 
-        # get the samples in the winning node
-        samples = self.reference_data.loc[self.reference_data['winning_node'] == winning_node, ['msp', 'vpl']]
+            # fit the SOM model
+            self.fit_som()
+
+            # get the winning node
+            winning_node = self.get_winning_node_for_input()
+
+            # get the samples in the winning node
+            samples = self.reference_data.loc[self.reference_data['winning_node'] == winning_node, ['msp', 'vpl']]
+
+            # update the all samples
+            all_samples = pd.concat([all_samples, samples], axis=0)
 
         # bootstrap the samples
-        bootstrapped_MSP = bootstrap(samples['msp'], n_bootstraps=1000)
-        bootstrapped_VPL = bootstrap(samples['vpl'], n_bootstraps=1000)
+        bootstrapped_MSP = bootstrap(all_samples['msp'], n_bootstraps=1000)
+        bootstrapped_VPL = bootstrap(all_samples['vpl'], n_bootstraps=1000)
 
         # calculate the risk
         MSP_GOAL = self.contract['goalMSP']
@@ -163,11 +174,95 @@ class RiskAssessmentSOM:
 
         return {
             'MSP': riskMSP,
-            'NPV': riskVPL
+            'NPV': riskVPL,
+            'msp_dist': bootstrapped_MSP,
+            'vpl_dist': bootstrapped_VPL
         }
-
-
     
+    def build_distribution(self, data: np.array, name: str) -> str:
+        """
+        Build the distribution for the histogram
 
-        
-        
+        Parameters
+        ----------
+        data : np.array
+            the data to build the distribution
+        name : str
+            the name of the distribution
+
+        Returns
+        -------
+        str
+            the distribution as a string
+        """
+        # build a histogram blue, with a title in the x label and in the ylabel
+        # using plotly graph objects
+        fig = go.Figure()
+        fig.add_trace(go.Histogram(x=data, histnorm='probability'))
+        fig.update_layout(
+            xaxis_title_text=name,
+            yaxis_title_text='Probability',
+            bargap=0.05,
+            bargroupgap=0.2
+        )
+
+        if 'MSP' in name:
+            goal = 'goalMSP'
+
+            # add a vertical span for the region of interest (light green)
+            # and outside the region of interest (light red)
+            fig.add_vrect(
+                x0=self.contract[goal],
+                x1=max(max(data), self.contract[goal]),
+                fillcolor="tomato",
+                opacity=0.5,
+                layer="below",
+                line_width=0
+            )
+            fig.add_vrect(
+                x0=0.9*min(min(data), self.contract[goal]),
+                x1=self.contract[goal],
+                fillcolor="lightgreen",
+                opacity=0.5,
+                layer="below",
+                line_width=0
+            )
+        else:
+            # add a vertical span for the region of interest (light green)
+            # and outside the region of interest (light red)
+            goal = 'goalNPV'
+            fig.add_vrect(
+                x0=self.contract[goal],
+                x1=max(self.contract[goal], max(data)),
+                fillcolor="lightgreen",
+                opacity=0.5,
+                layer="below",
+                line_width=0
+            )
+            fig.add_vrect(
+                x0=0.9*min(min(data), self.contract[goal]),
+                x1=self.contract[goal],
+                fillcolor="tomato",
+                opacity=0.5,
+                layer="below",
+                line_width=0
+            )
+
+        # add a vertical line for the goal
+        fig.add_shape(
+            dict(
+                type="line",
+                x0=self.contract[goal],
+                y0=0,
+                x1=self.contract[goal],
+                y1=0.2,
+                line=dict(
+                    color="Red",
+                    width=3
+                )
+            )
+        )
+
+        # convert the figure to a string
+        return pio.to_html(fig)
+    
