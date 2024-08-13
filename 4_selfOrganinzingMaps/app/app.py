@@ -32,6 +32,12 @@ def home():
     # Create an instance of the PlantDesignForm
     form = PlantDesignForm()
     if form.validate_on_submit():
+
+        # some of the form fields are percentages
+        # convert them to decimal
+        for item in ['glucoseToEthanol', 'celluloseToGlucose', 'organosolvToCellulose']:
+            form[item].data = form[item].data / 100
+
         # Prepare the data for the KPIs estimation and the risk assessment
         kpis_estimate.prepare_data(form)
         risk_assess.prepare_data(form)
@@ -48,7 +54,21 @@ def home():
         riskMSP = risk.get('MSP')
         riskNPV = risk.get('NPV')
 
-        return render_template('index.html', form=form, npv=npv, msp=msp, riskMSP=riskMSP, riskNPV=riskNPV)
+        # build distribuition for the histogram
+        npv_dist = risk_assess.build_distribution(risk.get('vpl_dist'), name='NPV (MM USD)')
+        msp_dist = risk_assess.build_distribution(risk.get('msp_dist'), name='MSP (USD / L)')
+
+        # build payload
+        payload = dict(
+            npv=npv,
+            msp=msp,
+            riskMSP=riskMSP,
+            riskNPV=riskNPV,
+            npv_dist=npv_dist,
+            msp_dist=msp_dist
+        )
+
+        return render_template('index.html', form=form, payload=payload)
     return render_template('index.html', form=form)
 
 if __name__ == '__main__':
