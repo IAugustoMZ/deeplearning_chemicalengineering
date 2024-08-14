@@ -38,13 +38,13 @@
             <div class="form-group">
                 {{ form.capexPhase1.label }}
                 <br>
-                <span class="subtitle">(Range: 168 - 312 MM USD)</span>
+                <span class="subtitle">(Range: 160 - 319 MM USD)</span>
                 {{ form.capexPhase1(id='capexPhase1', class='form-control') }}
             </div>
             <div class="form-group">
                 {{ form.rawMaterialCost.label }}
                 <br>
-                <span class="subtitle">(Range: 56 - 83 USD / kg)</span>
+                <span class="subtitle">(Range: 55 - 83 USD / kg)</span>
                 {{ form.rawMaterialCost(id='rawMaterialCost', class='form-control') }}
             </div>
             <div class="form-group">
@@ -56,13 +56,13 @@
             <div class="form-group">
                 {{ form.ligninSellingPrice.label }}
                 <br>
-                <span class="subtitle">(Range: 529 - 1096 USD / kg)</span>
+                <span class="subtitle">(Range: 526 - 1096 USD / kg)</span>
                 {{ form.ligninSellingPrice(id='ligninSellingPrice', class='form-control') }}
             </div>
             <div class="form-group">
                 {{ form.ethanolSellingPrice.label }}
                 <br>
-                <span class="subtitle">(Range: 0.27 - 0.71 USD / L)</span>
+                <span class="subtitle">(Range: 0.22 - 0.77 USD / L)</span>
                 {{ form.ethanolSellingPrice(id='ethanolSellingPrice', class='form-control') }}
             </div>
             {{ form.submit(class='btn btn-primary') }}
@@ -142,6 +142,22 @@
                                 {% if payload %}
                                     {{ payload.msp_dist | safe }}
                                 {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row description-section">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title"><b>Risk Analysis and Recommendation</b></h5>
+                                <p>
+                                    {% if risk_analysis %}
+                                        {{ risk_analysis }}
+                                    {% else %}
+                                        No risk analysis.
+                                    {% endif %}
+                                </p>
                             </div>
                         </div>
                     </div>

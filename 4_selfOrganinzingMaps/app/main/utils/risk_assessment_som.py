@@ -147,8 +147,9 @@ class RiskAssessmentSOM:
         float
             the risk of not achieving the goals
         """
-        all_samples = pd.DataFrame()
-        for _ in range(100):
+        msp_avg = []
+        vpl_avg = []
+        for _ in range(50):
 
             # fit the SOM model
             self.fit_som()
@@ -159,12 +160,13 @@ class RiskAssessmentSOM:
             # get the samples in the winning node
             samples = self.reference_data.loc[self.reference_data['winning_node'] == winning_node, ['msp', 'vpl']]
 
-            # update the all samples
-            all_samples = pd.concat([all_samples, samples], axis=0)
+            # get the average of the samples
+            msp_avg.append(samples['msp'].mean())
+            vpl_avg.append(samples['vpl'].mean())
 
         # bootstrap the samples
-        bootstrapped_MSP = bootstrap(all_samples['msp'], n_bootstraps=1000)
-        bootstrapped_VPL = bootstrap(all_samples['vpl'], n_bootstraps=1000)
+        bootstrapped_MSP = bootstrap(pd.Series(msp_avg), n_bootstraps=1000)
+        bootstrapped_VPL = bootstrap(pd.Series(vpl_avg), n_bootstraps=1000)
 
         # calculate the risk
         MSP_GOAL = self.contract['goalMSP']
