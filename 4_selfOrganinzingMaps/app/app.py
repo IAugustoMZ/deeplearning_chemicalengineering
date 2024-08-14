@@ -1,9 +1,10 @@
 import os
+import numpy as np
 from dotenv import load_dotenv
 from flask_bootstrap import Bootstrap
 from flask import Flask, render_template
 from main.utils.forms import PlantDesignForm
-from main.utils.kpis_estimate import KPIsEstimate
+from main.utils.llm_risk_analyst import LLMRiskAnalyst
 from main.utils.risk_assessment_som import RiskAssessmentSOM
 
 # get the path to the .env file
@@ -22,9 +23,9 @@ app.config['SECRET_KEY'] = SECRET_KEY
 # Create a Bootstrap app
 Bootstrap(app)
 
-# Create an instance of the KPIsEstimate class and of the SOM
-kpis_estimate = KPIsEstimate()
+# Create an instance of the SOM risk assessment and the LLM risk analyst
 risk_assess = RiskAssessmentSOM()
+llm_risk_analyst = LLMRiskAnalyst()
 
 # Define the home page
 @app.route('/', methods=['GET', 'POST'])
@@ -39,15 +40,7 @@ def home():
             form[item].data = form[item].data / 100
 
         # Prepare the data for the KPIs estimation and the risk assessment
-        kpis_estimate.prepare_data(form)
         risk_assess.prepare_data(form)
-
-        # Estimate the KPIs
-        results = kpis_estimate.estimate_KPIs()
-
-        # get the KPIs
-        npv = round(results.get('NPV'),2)
-        msp = round(results.get('MSP'),2)
 
         # estimate the risk of not achieving goals
         risk = risk_assess.estimate_risk()
@@ -60,15 +53,18 @@ def home():
 
         # build payload
         payload = dict(
-            npv=npv,
-            msp=msp,
+            npv=round(np.mean(risk.get('vpl_dist')), 2),
+            msp=round(np.mean(risk.get('msp_dist')), 2),
             riskMSP=riskMSP,
             riskNPV=riskNPV,
             npv_dist=npv_dist,
             msp_dist=msp_dist
         )
 
-        return render_template('index.html', form=form, payload=payload)
+        # assess the risk
+        risk_analysis = llm_risk_analyst.assess_risk(payload, risk)
+
+        return render_template('index.html', form=form, payload=payload, risk_analysis=risk_analysis)
     return render_template('index.html', form=form)
 
 if __name__ == '__main__':
